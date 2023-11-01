@@ -6,5 +6,5 @@ export const hashPassword = (plaintext: string): string => {
 };
 
 export const verifyPassword = (plaintext: string, hashVal: string): boolean => {
-  compareSync(plaintext, hashVal);
+  return compareSync(plaintext, hashVal);
 };
