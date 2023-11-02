@@ -6,6 +6,7 @@ export interface IUser {
   name: string;
   registeredAt: Date;
 }
+
 export interface IUserRepository {
   create(user: ICreateUserDto): Promise<IUser>;
 }
