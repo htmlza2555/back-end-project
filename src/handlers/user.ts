@@ -5,6 +5,7 @@ import { IUserRepository } from "../repositories";
 import { hashPassword, verifyPassword } from "../utils/bcrypt";
 import { sign } from "jsonwebtoken";
 import { JWT_SECRET } from "../const";
+import { RequestHandler } from "express";
 
 export default class UserHandler implements IUserHandler {
   constructor(private repo: IUserRepository) {}
@@ -46,6 +47,26 @@ export default class UserHandler implements IUserHandler {
       return res.status(500).json({
         message: `Internal Server Error`,
       });
+    }
+  };
+
+  public selfcheck: IUserHandler["selfcheck"] = async (req, res) => {
+    try {
+      const { registeredAt, ...others } = await this.repo.findById(
+        res.locals.user.id
+      );
+
+      return res
+        .status(200)
+        .json({
+          ...others,
+          registeredAt: registeredAt.toISOString(),
+        })
+        .end();
+    } catch (error) {
+      console.error(error);
+
+      return res.status(500).send({ message: "Internal in expected" }).end();
     }
   };
 

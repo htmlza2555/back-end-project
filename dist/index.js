@@ -25,6 +25,7 @@ userRouter.post("/", userHandler.registration);
 const authRouter = express_1.default.Router();
 app.use("/auth", authRouter);
 authRouter.post("/login", userHandler.login);
+authRouter.get("/me", jwtMiddleware.auth, userHandler.selfcheck);
 app.listen(PORT, () => {
     console.log(`LearHub API is up at ${PORT}`);
 });
