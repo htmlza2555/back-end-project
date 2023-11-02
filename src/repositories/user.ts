@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { IUser, IUserRepository } from ".";
 import { ICreateUserDto } from "../dto/user";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
@@ -15,6 +15,12 @@ export default class UserRepository implements IUserRepository {
         username: true,
         registeredAt: true,
       },
+    });
+  }
+
+  public async findByUsername(username: string): Promise<User> {
+    return await this.prisma.user.findUniqueOrThrow({
+      where: { username },
     });
   }
 }

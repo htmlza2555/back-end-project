@@ -2,7 +2,9 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { IUserHandler } from ".";
 import { IUserDto } from "../dto/user";
 import { IUserRepository } from "../repositories";
-import { hashPassword } from "../utils/bcrypt";
+import { hashPassword, verifyPassword } from "../utils/bcrypt";
+import { sign } from "jsonwebtoken";
+import { JWT_SECRET } from "../const";
 
 export default class UserHandler implements IUserHandler {
   constructor(private repo: IUserRepository) {}
@@ -44,6 +46,30 @@ export default class UserHandler implements IUserHandler {
       return res.status(500).json({
         message: `Internal Server Error`,
       });
+    }
+  };
+
+  public login: IUserHandler["login"] = async (req, res) => {
+    const { username, password: plaintext } = req.body;
+    try {
+      const { password, id } = await this.repo.findByUsername(username);
+
+      if (!verifyPassword(plaintext, password))
+        throw new Error("Invalid username or password");
+
+      const accessToken = sign({ id }, JWT_SECRET, {
+        algorithm: "HS512",
+        expiresIn: "12h",
+        issuer: "Learnhub-api",
+        subject: "user-credential",
+      });
+
+      return res.status(200).json({ accessToken }).end();
+    } catch (error) {
+      return res
+        .status(401)
+        .json({ message: "Invalid username or password" })
+        .end();
     }
   };
 }
