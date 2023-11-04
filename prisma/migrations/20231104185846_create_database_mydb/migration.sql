@@ -18,7 +18,7 @@ CREATE TABLE "Content" (
     "rating" INTEGER NOT NULL,
     "thumbnailUrl" TEXT NOT NULL,
     "creatorName" TEXT NOT NULL,
-    "CreatorUrl" TEXT NOT NULL,
+    "creatorUrl" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ownerId" UUID NOT NULL,

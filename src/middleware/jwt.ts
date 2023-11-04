@@ -9,7 +9,7 @@ export interface AuthStatus {
 export default class JWTMiddleware {
   constructor() {}
 
-  auth: RequestHandler<unknown, unknown, unknown, AuthStatus> = (
+  auth: RequestHandler<unknown, unknown, unknown, unknown, AuthStatus> = (
     req,
     res,
     next
