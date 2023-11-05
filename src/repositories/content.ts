@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { IContent, IContentRepository, ICreateContent } from ".";
+import { SAFE_USER_SELECT } from "../const";
 
 export default class ContentRepository implements IContentRepository {
   private prisma: PrismaClient;
@@ -17,12 +18,7 @@ export default class ContentRepository implements IContentRepository {
       },
       include: {
         User: {
-          select: {
-            id: true,
-            username: true,
-            name: true,
-            registeredAt: true,
-          },
+          select: SAFE_USER_SELECT,
         },
       },
     });
