@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import { IUser, IUserRepository } from ".";
 import { ICreateUserDto } from "../dto/user";
-import { SAFE_USER_SELECT } from "../const";
+import { DEFAULT_USER_SELECT } from "../const";
 
 export default class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaClient) {}
@@ -9,7 +9,7 @@ export default class UserRepository implements IUserRepository {
   public async createUser(user: ICreateUserDto): Promise<IUser> {
     return await this.prisma.user.create({
       data: user,
-      select: SAFE_USER_SELECT,
+      select: DEFAULT_USER_SELECT,
     });
   }
 
@@ -21,7 +21,7 @@ export default class UserRepository implements IUserRepository {
 
   public async findById(id: string): Promise<IUser> {
     return await this.prisma.user.findUniqueOrThrow({
-      select: SAFE_USER_SELECT,
+      select: DEFAULT_USER_SELECT,
       where: { id },
     });
   }

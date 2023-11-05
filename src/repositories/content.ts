@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { IContent, IContentRepository, ICreateContent } from ".";
-import { SAFE_USER_SELECT } from "../const";
+import { DEFAULT_USER_SELECT } from "../const";
 
 export default class ContentRepository implements IContentRepository {
   private prisma: PrismaClient;
@@ -18,7 +18,18 @@ export default class ContentRepository implements IContentRepository {
       },
       include: {
         User: {
-          select: SAFE_USER_SELECT,
+          select: DEFAULT_USER_SELECT,
+        },
+      },
+    });
+  }
+
+  getContentById(id: number): Promise<IContent> {
+    return this.prisma.content.findUniqueOrThrow({
+      where: { id },
+      include: {
+        User: {
+          select: DEFAULT_USER_SELECT,
         },
       },
     });

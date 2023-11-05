@@ -6,6 +6,7 @@ import { RequestHandler } from "express";
 import { IErrorDto } from "../dto/error";
 import { AuthStatus } from "../middleware/jwt";
 import oembedVideo from "../utils/oembed";
+import contentMapper from "../utils/content.mapper";
 
 export default class ContentHandler implements IContentHandler {
   constructor(private repo: IContentRepository) {}
@@ -63,6 +64,24 @@ export default class ContentHandler implements IContentHandler {
         return res.status(400).json({ message: error.message }).end();
 
       res.status(500).json({ message: "Internal Server Error" }).end();
+    }
+  };
+
+  public getContentById: IContentHandler["getContentById"] = async (
+    req,
+    res
+  ) => {
+    try {
+      const id = Number(req.params.id);
+      const result = await this.repo.getContentById(id);
+      const contentResponse = contentMapper(result);
+      return res.status(200).json(contentResponse).end();
+    } catch (error) {
+      console.log(error);
+      if (error instanceof Error) {
+        return res.status(400).json({ message: error.message }).end();
+      }
+      return res.status(500).json({ message: "internal server error" }).end();
     }
   };
 }

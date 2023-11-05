@@ -8,7 +8,7 @@ import { IContentDto, ICreateContentDto } from "../dto/content";
 export interface IUserHandler {
   registration: RequestHandler<{}, IUserDto | IErrorDto, ICreateUserDto>;
   login: RequestHandler<{}, ICredentialDto | IErrorDto, ILoginDto>;
-  selfcheck: RequestHandler<
+  getPersonalInfo: RequestHandler<
     {},
     IUserDto | IErrorDto,
     unknown,
@@ -25,4 +25,5 @@ export interface IContentHandler {
     undefined,
     AuthStatus
   >;
+  getContentById: RequestHandler<{ id: string }, IContentDto | IErrorDto>;
 }
