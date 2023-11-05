@@ -5,6 +5,7 @@ import { IContentRepository, ICreateContent } from "../repositories";
 import { RequestHandler } from "express";
 import { IErrorDto } from "../dto/error";
 import { AuthStatus } from "../middleware/jwt";
+import oembedVideo from "../utils/oembed";
 
 export default class ContentHandler implements IContentHandler {
   constructor(private repo: IContentRepository) {}
@@ -27,35 +28,47 @@ export default class ContentHandler implements IContentHandler {
       throw new Error("rating is out of range 0-5");
     }
 
-    const {
-      User: { registeredAt, ...userInfo },
-      createdAt,
-      updatedAt,
-      ...contentInfo
-    } = await this.repo.createContent(
-      {
-        videoUrl,
-        comment,
-        rating,
-        creatorName: "",
-        creatorUrl: "",
-        thumbnailUrl: "",
-        videoTitle: "",
-      },
-      res.locals.user.id
-    );
-
-    return res
-      .status(201)
-      .json({
-        ...contentInfo,
-        postedBy: {
-          ...userInfo,
-          registeredAt: registeredAt.toISOString(),
+    try {
+      const { authorName, authorUrl, thumbnailUrl, title } = await oembedVideo(
+        videoUrl
+      );
+      const {
+        User: { registeredAt, ...userInfo },
+        createdAt,
+        updatedAt,
+        ...contentInfo
+      } = await this.repo.createContent(
+        {
+          videoUrl,
+          comment,
+          rating,
+          creatorName: authorName,
+          creatorUrl: authorUrl,
+          thumbnailUrl: thumbnailUrl,
+          videoTitle: title,
         },
-        createdAt: createdAt.toISOString(),
-        updatedAt: updatedAt.toISOString(),
-      })
-      .end();
+        res.locals.user.id
+      );
+
+      return res
+        .status(201)
+        .json({
+          ...contentInfo,
+          postedBy: {
+            ...userInfo,
+            registeredAt: registeredAt.toISOString(),
+          },
+          createdAt: createdAt.toISOString(),
+          updatedAt: updatedAt.toISOString(),
+        })
+        .end();
+    } catch (error) {
+      console.error(error);
+
+      if (error instanceof URIError)
+        return res.status(400).json({ message: error.message }).end();
+
+      res.status(500).json({ message: "Internal Server Error" }).end();
+    }
   };
 }

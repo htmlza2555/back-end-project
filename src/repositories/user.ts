@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 import { IUser, IUserRepository } from ".";
 import { ICreateUserDto } from "../dto/user";
 
