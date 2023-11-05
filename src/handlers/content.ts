@@ -10,13 +10,7 @@ import oembedVideo from "../utils/oembed";
 export default class ContentHandler implements IContentHandler {
   constructor(private repo: IContentRepository) {}
 
-  public createContent: RequestHandler<
-    {},
-    IContentDto | IErrorDto,
-    ICreateContentDto,
-    undefined,
-    AuthStatus
-  > = async (req, res) => {
+  public createContent: IContentHandler["createContent"] = async (req, res) => {
     const { rating, videoUrl, comment } = req.body;
     if (videoUrl.length === 0 || typeof videoUrl !== "string") {
       throw new Error("invalid videoUrl");
