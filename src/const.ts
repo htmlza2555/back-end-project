@@ -7,7 +7,7 @@ if (!ENV_JWT_SECRET)
 
 export const JWT_SECRET = ENV_JWT_SECRET;
 
-export const SAFE_USER_SELECT: Prisma.UserSelect = {
+export const DEFAULT_USER_SELECT: Prisma.UserSelect = {
   id: true,
   name: true,
   username: true,

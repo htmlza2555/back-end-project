@@ -37,12 +37,23 @@ const authRouter = express.Router();
 
 app.use("/auth", authRouter);
 authRouter.post("/login", userHandler.login);
-authRouter.get("/me", jwtMiddleware.auth, userHandler.selfcheck);
+authRouter.get("/me", jwtMiddleware.auth, userHandler.getPersonalInfo);
 
 const contentRouter = express.Router();
 
 app.use("/content", contentRouter);
-
+contentRouter.get("/", contentHandler.getAllContents);
+contentRouter.get("/:id", contentHandler.getContentById);
+contentRouter.patch(
+  "/:id",
+  jwtMiddleware.auth,
+  contentHandler.updateContentById
+);
+contentRouter.delete(
+  "/:id",
+  jwtMiddleware.auth,
+  contentHandler.deleteContentById
+);
 contentRouter.post("/", jwtMiddleware.auth, contentHandler.createContent);
 
 app.listen(PORT, () => {

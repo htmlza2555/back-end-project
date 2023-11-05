@@ -20,3 +20,8 @@ export interface ICreateContentDto {
   comment: string;
   rating: number;
 }
+
+export interface IUpdateContentDto {
+  comment: string;
+  rating: number;
+}
