@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { IContent, IContentRepository, ICreateContent } from ".";
 import { DEFAULT_USER_SELECT } from "../const";
+import { IUpdateContentDto } from "../dto/content";
 
 export default class ContentRepository implements IContentRepository {
   private prisma: PrismaClient;
@@ -37,6 +38,19 @@ export default class ContentRepository implements IContentRepository {
 
   getAllContents(): Promise<IContent[]> {
     return this.prisma.content.findMany({
+      include: {
+        User: {
+          select: DEFAULT_USER_SELECT,
+        },
+      },
+    });
+  }
+
+  updateContentById(id: number, content: IUpdateContentDto): Promise<IContent> {
+    const updateTime = new Date().toISOString();
+    return this.prisma.content.update({
+      where: { id },
+      data: { ...content, updatedAt: updateTime },
       include: {
         User: {
           select: DEFAULT_USER_SELECT,
