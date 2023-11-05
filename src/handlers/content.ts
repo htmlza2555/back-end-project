@@ -135,4 +135,31 @@ export default class ContentHandler implements IContentHandler {
       return res.status(500).json({ message: "Internal server error" }).end();
     }
   };
+
+  public deleteContentById: IContentHandler["deleteContentById"] = async (
+    req,
+    res
+  ) => {
+    try {
+      const userId = res.locals.user.id;
+      const contentId = Number(req.params.id);
+      const result = await this.repo.deleteContentById(contentId);
+      if (userId !== result.User.id) throw new Error("OwnerId is invalid");
+      const contentResponse = contentMapper(result);
+      return res.status(200).json(contentResponse).end();
+    } catch (error) {
+      console.error(error);
+      if (error instanceof PrismaClientKnownRequestError) {
+        return res
+          .status(400)
+          .json({ message: "content does not exist" })
+          .end();
+      }
+      if (error instanceof Error) {
+        return res.status(403).json({ message: error.message }).end();
+      }
+
+      return res.status(500).json({ message: "internal server error" }).end;
+    }
+  };
 }

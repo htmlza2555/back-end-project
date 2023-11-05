@@ -49,6 +49,11 @@ contentRouter.patch(
   jwtMiddleware.auth,
   contentHandler.updateContentById
 );
+contentRouter.delete(
+  "/:id",
+  jwtMiddleware.auth,
+  contentHandler.deleteContentById
+);
 contentRouter.post("/", jwtMiddleware.auth, contentHandler.createContent);
 
 app.listen(PORT, () => {

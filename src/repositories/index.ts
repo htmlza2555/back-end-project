@@ -26,4 +26,5 @@ export interface IContentRepository {
   getContentById(id: number): Promise<IContent>;
   getAllContents(): Promise<IContent[]>;
   updateContentById(id: number, content: IUpdateContentDto): Promise<IContent>;
+  deleteContentById(id: number): Promise<IContent>;
 }

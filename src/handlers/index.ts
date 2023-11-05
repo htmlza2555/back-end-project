@@ -36,4 +36,5 @@ export interface IContentHandler {
     IContentDto | IErrorDto,
     IUpdateContentDto
   >;
+  deleteContentById: RequestHandler<{ id: string }, IContentDto | IErrorDto>;
 }
