@@ -1,11 +1,10 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { IUserHandler } from ".";
-import { IUserDto } from "../dto/user";
+import { IUserDto, toUserDto } from "../dto/user";
 import { IUserRepository } from "../repositories";
 import { hashPassword, verifyPassword } from "../utils/bcrypt";
 import { sign } from "jsonwebtoken";
 import { JWT_SECRET } from "../const";
-import { RequestHandler } from "express";
 
 export default class UserHandler implements IUserHandler {
   constructor(private repo: IUserRepository) {}
@@ -23,16 +22,13 @@ export default class UserHandler implements IUserHandler {
       return res.status(400).json({ message: "password is invalid" });
     }
     try {
-      const result = await this.repo.create({
+      const result = await this.repo.createUser({
         name,
         username,
         password: hashPassword(password),
       });
 
-      const userResponse: IUserDto = {
-        ...result,
-        registeredAt: result.registeredAt.toUTCString(),
-      };
+      const userResponse: IUserDto = toUserDto(result);
 
       return res.status(201).json(userResponse).end();
     } catch (error) {

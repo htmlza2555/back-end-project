@@ -1,3 +1,8 @@
+import { IUser } from "../repositories";
+
+export interface Id {
+  id: string;
+}
 export interface IUserDto {
   id: string;
   username: string;
@@ -10,3 +15,12 @@ export interface ICreateUserDto {
   username: string;
   password: string;
 }
+
+export const toUserDto = (user: IUser): IUserDto => {
+  const userDTO: IUserDto = {
+    ...user,
+    registeredAt: user.registeredAt.toISOString(),
+  };
+
+  return userDTO;
+};

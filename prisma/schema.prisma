@@ -27,7 +27,7 @@ model Content {
   rating       Int
   thumbnailUrl String
   creatorName  String
-  CreatorUrl   String
+  creatorUrl   String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
   User         User     @relation(fields: [ownerId], references: [id])
