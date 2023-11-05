@@ -24,4 +24,5 @@ export interface ICreateContent
 export interface IContentRepository {
   createContent(content: ICreateContent, ownerId: string): Promise<IContent>;
   getContentById(id: number): Promise<IContent>;
+  getAllContents(): Promise<IContent[]>;
 }

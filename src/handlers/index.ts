@@ -26,4 +26,5 @@ export interface IContentHandler {
     AuthStatus
   >;
   getContentById: RequestHandler<{ id: string }, IContentDto | IErrorDto>;
+  getAllContents: RequestHandler<{}, IContentDto[] | IErrorDto>;
 }

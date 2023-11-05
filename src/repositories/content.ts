@@ -34,4 +34,14 @@ export default class ContentRepository implements IContentRepository {
       },
     });
   }
+
+  getAllContents(): Promise<IContent[]> {
+    return this.prisma.content.findMany({
+      include: {
+        User: {
+          select: DEFAULT_USER_SELECT,
+        },
+      },
+    });
+  }
 }

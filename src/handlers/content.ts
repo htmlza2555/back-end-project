@@ -84,4 +84,16 @@ export default class ContentHandler implements IContentHandler {
       return res.status(500).json({ message: "internal server error" }).end();
     }
   };
+
+  public getAllContents: IContentHandler["getAllContents"] = async (
+    req,
+    res
+  ) => {
+    const result = await this.repo.getAllContents();
+    const contentResponse = result.map((content) => {
+      return contentMapper(content);
+    });
+
+    return res.status(200).json(contentResponse).end();
+  };
 }

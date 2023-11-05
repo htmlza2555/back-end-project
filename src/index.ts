@@ -42,6 +42,7 @@ authRouter.get("/me", jwtMiddleware.auth, userHandler.getPersonalInfo);
 const contentRouter = express.Router();
 
 app.use("/content", contentRouter);
+contentRouter.get("/", contentHandler.getAllContents);
 contentRouter.get("/:id", contentHandler.getContentById);
 contentRouter.post("/", jwtMiddleware.auth, contentHandler.createContent);
 

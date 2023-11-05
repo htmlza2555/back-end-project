@@ -32,6 +32,7 @@ authRouter.post("/login", userHandler.login);
 authRouter.get("/me", jwtMiddleware.auth, userHandler.getPersonalInfo);
 const contentRouter = express_1.default.Router();
 app.use("/content", contentRouter);
+contentRouter.get("/", contentHandler.getAllContents);
 contentRouter.get("/:id", contentHandler.getContentById);
 contentRouter.post("/", jwtMiddleware.auth, contentHandler.createContent);
 app.listen(PORT, () => {
