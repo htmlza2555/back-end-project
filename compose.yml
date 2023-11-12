@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:academy@pg-db:5432/mydb?schema=public
+      - PORT=8080
+      - JWT_SECRET=pElw0WIu9bu87JoCZaFqWPUn576uX430A1sONpe4DgQSTX
+    ports:
+      - 8080:8080
+    depends_on:
+      - pg-db
+  pg-db:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=academy
+    volumes:
+      - learnhub-db-vol:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+volumes:
+  learnhub-db-vol:
+    name: 76bc8800775fa6fd022c82e44760ef14ed81ff84b29dd4c6c235ddfd4b6b9ade

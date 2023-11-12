@@ -14,6 +14,9 @@ export interface IContentDto {
   createdAt: string;
   updatedAt: string;
 }
+export interface IContentsDto {
+  data: IContentDto;
+}
 
 export interface ICreateContentDto {
   videoUrl: string;

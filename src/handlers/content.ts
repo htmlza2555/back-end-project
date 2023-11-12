@@ -15,18 +15,17 @@ export default class ContentHandler implements IContentHandler {
   constructor(private repo: IContentRepository) {}
 
   public createContent: IContentHandler["createContent"] = async (req, res) => {
-    const { rating, videoUrl, comment } = req.body;
-    if (videoUrl.length === 0 || typeof videoUrl !== "string") {
-      throw new Error("invalid videoUrl");
-    }
-    if (comment === undefined || typeof comment !== "string") {
-      throw new Error("invalid comment");
-    }
-    if (rating > 5 || rating < 0) {
-      throw new Error("rating is out of range 0-5");
-    }
-
     try {
+      const { rating, videoUrl, comment } = req.body;
+      if (videoUrl.length === 0 || typeof videoUrl !== "string") {
+        throw new Error("invalid videoUrl");
+      }
+      if (comment === undefined || typeof comment !== "string") {
+        throw new Error("invalid comment");
+      }
+      if (rating > 5 || rating < 1) {
+        throw new Error("rating is out of range 1-5");
+      }
       const { authorName, authorUrl, thumbnailUrl, title } = await oembedVideo(
         videoUrl
       );
@@ -65,6 +64,9 @@ export default class ContentHandler implements IContentHandler {
 
       if (error instanceof URIError)
         return res.status(400).json({ message: error.message }).end();
+      if (error instanceof Error) {
+        return res.status(403).json({ message: error.message });
+      }
 
       res.status(500).json({ message: "Internal Server Error" }).end();
     }
@@ -113,25 +115,28 @@ export default class ContentHandler implements IContentHandler {
       }
       if (
         rating > 5 ||
-        rating < 0 ||
+        rating < 1 ||
         rating === undefined ||
         typeof rating !== "number"
       ) {
         throw new Error("rating is out of range 0-5");
       }
 
+      const check = await this.repo.getContentById(contentId);
+      if (userId !== check.User.id) throw new Error("OwnerId is invalid");
       const result = await this.repo.updateContentById(contentId, {
         comment,
         rating,
       });
-      if (userId !== result.User.id) throw new Error("OwnerId is invalid");
       const contentResponse = contentMapper(result);
       return res.status(200).json(contentResponse).end();
     } catch (error) {
       console.error(error);
       if (error instanceof PrismaClientKnownRequestError)
         return res.status(400).json({ message: error.message }).end();
-
+      if (error instanceof Error) {
+        return res.status(403).json({ message: error.message }).end();
+      }
       return res.status(500).json({ message: "Internal server error" }).end();
     }
   };
@@ -143,8 +148,9 @@ export default class ContentHandler implements IContentHandler {
     try {
       const userId = res.locals.user.id;
       const contentId = Number(req.params.id);
+      const check = await this.repo.getContentById(contentId);
+      if (userId !== check.User.id) throw new Error("OwnerId is invalid");
       const result = await this.repo.deleteContentById(contentId);
-      if (userId !== result.User.id) throw new Error("OwnerId is invalid");
       const contentResponse = contentMapper(result);
       return res.status(200).json(contentResponse).end();
     } catch (error) {

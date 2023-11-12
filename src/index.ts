@@ -7,10 +7,14 @@ import UserHandler from "./handlers/user";
 import JWTMiddleware from "./middleware/jwt";
 import ContentRepository from "./repositories/content";
 import ContentHandler from "./handlers/content";
+import cors from "cors";
 
 const PORT = Number(process.env.PORT || 8888);
 const app = express();
 const client = new PrismaClient();
+
+app.use(cors());
+app.use(express.json());
 
 const userRepo: IUserRepository = new UserRepository(client);
 const contentRepo: IContentRepository = new ContentRepository(client);
@@ -19,8 +23,6 @@ const userHandler: IUserHandler = new UserHandler(userRepo);
 const contentHandler: IContentHandler = new ContentHandler(contentRepo);
 
 const jwtMiddleware = new JWTMiddleware();
-
-app.use(express.json());
 
 app.get("/", jwtMiddleware.auth, (req, res) => {
   console.log(res.locals);
@@ -57,5 +59,5 @@ contentRouter.delete(
 contentRouter.post("/", jwtMiddleware.auth, contentHandler.createContent);
 
 app.listen(PORT, () => {
-  console.log(`LearHub API is up at ${PORT}`);
+  console.log(`LearnHub API is up at ${PORT}`);
 });

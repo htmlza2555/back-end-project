@@ -43,6 +43,7 @@ export default class ContentRepository implements IContentRepository {
           select: DEFAULT_USER_SELECT,
         },
       },
+      orderBy: { id: "desc" },
     });
   }
 
