@@ -8,11 +8,9 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
-        with:
-          sparse-checkout: .
       - name: Echo hello-world
         run: echo "Hello, world."
-      - name: where
+      - name: Where now!!
         run: pwd
       - name: list
         run: ls
