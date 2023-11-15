@@ -1,13 +1,19 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { IUserHandler } from ".";
 import { IUserDto, toUserDto } from "../dto/user";
-import { IUserRepository } from "../repositories";
+import { IBlacklistRepository, IUserRepository } from "../repositories";
 import { hashPassword, verifyPassword } from "../utils/bcrypt";
-import { sign } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 import { JWT_SECRET } from "../const";
+import { RequestHandler } from "express";
+import { ILogoutDto } from "../dto/auth";
+import { AuthStatus } from "../middleware/jwt";
 
 export default class UserHandler implements IUserHandler {
-  constructor(private repo: IUserRepository) {}
+  constructor(
+    private repo: IUserRepository,
+    private blacklistRepo: IBlacklistRepository
+  ) {}
 
   public registration: IUserHandler["registration"] = async (req, res) => {
     const { name, username, password } = req.body;
@@ -91,5 +97,28 @@ export default class UserHandler implements IUserHandler {
         .json({ message: "Invalid username or password" })
         .end();
     }
+  };
+  public logout: RequestHandler<
+    {},
+    ILogoutDto,
+    undefined,
+    undefined,
+    AuthStatus
+  > = async (req, res) => {
+    const authHeader = req.header("Authorization");
+    if (!authHeader)
+      return res
+        .status(400)
+        .send({ message: "Authorization header is expected" })
+        .end();
+
+    const token = authHeader.replace("Bearer ", "").trim();
+
+    const decoded = verify(token, JWT_SECRET) as JwtPayload;
+
+    const exp = decoded.exp;
+
+    if (!exp)
+      return res.status(400).send({ message: "You've been logged out" }).end();
   };
 }

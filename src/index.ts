@@ -8,10 +8,15 @@ import JWTMiddleware from "./middleware/jwt";
 import ContentRepository from "./repositories/content";
 import ContentHandler from "./handlers/content";
 import cors from "cors";
+import { createClient } from "redis";
+import BlacklistRepository from "./repositories/blacklist";
 
 const PORT = Number(process.env.PORT || 8888);
 const app = express();
 const client = new PrismaClient();
+const redisClient = createClient();
+
+const blacklistRepo = new BlacklistRepository(redisClient);
 
 app.use(cors());
 app.use(express.json());

@@ -21,6 +21,11 @@ export interface IContent extends Omit<Content, "ownerId"> {
 export interface ICreateContent
   extends Omit<Content, "id" | "createdAt" | "updatedAt" | "ownerId"> {}
 
+export interface IBlacklistRepository {
+  addToBlacklist(token: string, exp: number): Promise<void>;
+  isAlreadyBlacklisted(token: string): Promise<boolean>;
+}
+
 export interface IContentRepository {
   createContent(content: ICreateContent, ownerId: string): Promise<IContent>;
   getContentById(id: number): Promise<IContent>;

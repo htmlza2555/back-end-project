@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { ICreateUserDto, IUserDto } from "../dto/user";
 import { IErrorDto } from "../dto/error";
-import { ICredentialDto, ILoginDto } from "../dto/auth";
+import { ICredentialDto, ILoginDto, ILogoutDto } from "../dto/auth";
 import { AuthStatus } from "../middleware/jwt";
 import {
   IContentDto,
@@ -19,6 +19,7 @@ export interface IUserHandler {
     unknown,
     AuthStatus
   >;
+  logout: RequestHandler<{}, ILogoutDto, undefined, undefined, AuthStatus>;
 }
 
 export interface IContentHandler {
