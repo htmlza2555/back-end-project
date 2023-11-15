@@ -4,7 +4,11 @@ on: push
 
 jobs:
   hello-world:
-  runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: Echo hello-world
-      run: echo "Hello, world."
+        run: echo "Hello, world."
+      - name: where
+        run: pwd
+      - name: list
+        run: ls
