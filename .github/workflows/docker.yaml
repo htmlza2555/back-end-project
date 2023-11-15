@@ -6,6 +6,10 @@ jobs:
   hello-world:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: .
       - name: Echo hello-world
         run: echo "Hello, world."
       - name: where
