@@ -8,13 +8,23 @@ import JWTMiddleware from "./middleware/jwt";
 import ContentRepository from "./repositories/content";
 import ContentHandler from "./handlers/content";
 import cors from "cors";
-import { createClient } from "redis";
+import { RedisClientType, createClient } from "redis";
+import { REDIS_URL } from "./const";
 import BlacklistRepository from "./repositories/blacklist";
 
 const PORT = Number(process.env.PORT || 8888);
 const app = express();
 const client = new PrismaClient();
-const redisClient = createClient();
+const redisClient: RedisClientType = createClient({
+  url: REDIS_URL,
+});
+
+client
+  .$connect()
+  .then(() => redisClient.connect())
+  .catch((err) => {
+    console.error("Error", err);
+  });
 
 const blacklistRepo = new BlacklistRepository(redisClient);
 
@@ -24,10 +34,10 @@ app.use(express.json());
 const userRepo: IUserRepository = new UserRepository(client);
 const contentRepo: IContentRepository = new ContentRepository(client);
 
-const userHandler: IUserHandler = new UserHandler(userRepo);
+const userHandler: IUserHandler = new UserHandler(userRepo, blacklistRepo);
 const contentHandler: IContentHandler = new ContentHandler(contentRepo);
 
-const jwtMiddleware = new JWTMiddleware();
+const jwtMiddleware = new JWTMiddleware(blacklistRepo);
 
 app.get("/", jwtMiddleware.auth, (req, res) => {
   console.log(res.locals);
@@ -44,6 +54,7 @@ const authRouter = express.Router();
 
 app.use("/auth", authRouter);
 authRouter.post("/login", userHandler.login);
+authRouter.get("/logout", jwtMiddleware.auth, userHandler.logout);
 authRouter.get("/me", jwtMiddleware.auth, userHandler.getPersonalInfo);
 
 const contentRouter = express.Router();

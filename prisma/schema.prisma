@@ -33,3 +33,10 @@ model Content {
   User         User     @relation(fields: [ownerId], references: [id])
   ownerId      String   @db.Uuid
 }
+
+model Blacklist {
+  token String    @unique @db.VarChar(512)
+  exp   DateTime?
+
+  @@index([exp(sort: Asc)], type: BTree)
+}

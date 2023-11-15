@@ -120,5 +120,8 @@ export default class UserHandler implements IUserHandler {
 
     if (!exp)
       return res.status(400).send({ message: "You've been logged out" }).end();
+
+    await this.blacklistRepo.addToBlacklist(token, exp);
+    return res.status(200);
   };
 }
