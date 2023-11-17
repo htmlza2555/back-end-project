@@ -15,9 +15,8 @@ export const DEFAULT_USER_SELECT: Prisma.UserSelect = {
   registeredAt: true,
 };
 
-export const getAuthToken = (authorizationHeader: string) => {
+export const getAuthToken = (authorizationHeader: string) =>
   authorizationHeader.replace("Bearer ", "").trim();
-};
 
 export const BLACKLIST_REDIS_KEY_PREFIX = "bl_";
 

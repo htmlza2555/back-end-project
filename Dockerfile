@@ -16,7 +16,7 @@ RUN ls -al
 # final stage
 FROM node:18-alpine
 
-ENV NODE=production
+ENV NODE_ENV=production
 
 WORKDIR /app
 

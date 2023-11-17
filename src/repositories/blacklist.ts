@@ -10,7 +10,7 @@ export default class BlacklistRepository implements IBlacklistRepository {
       BLACKLIST_REDIS_VALUE
     );
     await this.clnt.EXPIREAT(`${BLACKLIST_REDIS_KEY_PREFIX}${token}`, exp);
-    throw new Error("Method not implemented");
+    return;
   }
   async isAlreadyBlacklisted(token: string): Promise<boolean> {
     const val = await this.clnt.GET(`${BLACKLIST_REDIS_KEY_PREFIX}${token}`);

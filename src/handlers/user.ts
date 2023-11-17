@@ -4,10 +4,7 @@ import { IUserDto, toUserDto } from "../dto/user";
 import { IBlacklistRepository, IUserRepository } from "../repositories";
 import { hashPassword, verifyPassword } from "../utils/bcrypt";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
-import { JWT_SECRET } from "../const";
-import { RequestHandler } from "express";
-import { ILogoutDto } from "../dto/auth";
-import { AuthStatus } from "../middleware/jwt";
+import { JWT_SECRET, getAuthToken } from "../const";
 
 export default class UserHandler implements IUserHandler {
   constructor(
@@ -98,13 +95,7 @@ export default class UserHandler implements IUserHandler {
         .end();
     }
   };
-  public logout: RequestHandler<
-    {},
-    ILogoutDto,
-    undefined,
-    undefined,
-    AuthStatus
-  > = async (req, res) => {
+  public logout: IUserHandler["logout"] = async (req, res) => {
     const authHeader = req.header("Authorization");
     if (!authHeader)
       return res
@@ -112,16 +103,19 @@ export default class UserHandler implements IUserHandler {
         .send({ message: "Authorization header is expected" })
         .end();
 
-    const token = authHeader.replace("Bearer ", "").trim();
+    const authToken = getAuthToken(authHeader);
 
-    const decoded = verify(token, JWT_SECRET) as JwtPayload;
-
-    const exp = decoded.exp;
-
+    const { exp } = verify(authToken, JWT_SECRET) as JwtPayload;
     if (!exp)
-      return res.status(400).send({ message: "You've been logged out" }).end();
+      return res
+        .status(400)
+        .json({
+          message: "JWT is invalid",
+        })
+        .end();
 
-    await this.blacklistRepo.addToBlacklist(token, exp);
+    await this.blacklistRepo.addToBlacklist(authToken, exp);
+
     return res.status(200);
   };
 }
